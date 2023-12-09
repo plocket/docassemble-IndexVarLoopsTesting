@@ -1,0 +1,52 @@
+---
+# Necessary to tell us what the sought var is on each page
+# Every interview that wants testing will need to have an element like this
+default screen parts:
+  post: |
+    <div data-variable="${ encode_name(str( user_info().variable )) }" id="trigger" aria-hidden="true" style="display: none;"></div>
+---
+objects:
+  #- order_list: DAList.using(object_type=Person, there_are_any=True, ask_number=True)
+  #- order_list: DAList.using(object_type=Person, there_are_any=True, ask_number=True, target_number=2)
+  - order_list: DAList.using(object_type=Person)
+---
+mandatory: True
+code: |
+  #order_list.target_number
+  order_list.gather()
+  end
+---
+id: how many
+question: How many
+fields:
+  - no label: order_list.target_number
+    datatype: integer
+---
+id: any?
+question: Any?
+yesno: order_list.there_are_any
+---
+id: another?
+question: Another?
+yesno: order_list.there_is_another
+---
+question: |
+  Order Items
+subquestion: |
+  ### ${ capitalize(ordinal(i)) } Item
+fields:
+  - Description: order_list[i].name.text
+  - Fixed Amount: order_list[i].amount
+    datatype: currency
+  - Notes: order_list[i].notes
+    required: false
+  - note: Leave the Periodic Costs blank if there are none.
+  - Periodic Costs: order_list[i].periodic_amount
+    hint: e.g., $50 Monthly
+    required: false
+id: order_items
+---
+id: end
+event: end
+question: End
+---
